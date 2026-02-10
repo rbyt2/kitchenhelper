@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cooking Assistant Bot</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Cooking Assistant Bot</h1>
+            <p class="subtitle">AI-powered cooking guidance with Claude Vision</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Camera Section -->
+            <div class="camera-section">
+                <div class="camera-container">
+                    <video id="video" autoplay playsinline></video>
+                    <canvas id="canvas" style="display: none;"></canvas>
+                    <div id="camera-status" class="status-indicator">
+                        <span class="status-dot"></span>
+                        <span class="status-text">Initializing camera...</span>
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <button id="capture-btn" class="btn btn-primary" disabled>
+                        <span class="btn-icon">📸</span>
+                        Analyze Cooking
+                    </button>
+                    <button id="auto-mode-btn" class="btn btn-secondary">
+                        <span class="btn-icon">🔄</span>
+                        Auto Mode (30s)
+                    </button>
+                    <button id="speak-toggle-btn" class="btn btn-secondary active">
+                        <span class="btn-icon">🔊</span>
+                        Sound On
+                    </button>
+                </div>
+
+                <div id="countdown-display" class="countdown" style="display: none;">
+                    Next analysis in: <span id="countdown-seconds">30</span>s
+                </div>
+            </div>
+
+            <!-- Dialogue Section -->
+            <div class="dialogue-section">
+                <div class="dialogue-header">
+                    <h2>AI Cooking Guidance</h2>
+                    <button id="clear-btn" class="btn-small">Clear History</button>
+                </div>
+                
+                <div id="dialogue-container" class="dialogue-container">
+                    <div class="dialogue-message welcome-message">
+                        <div class="message-header">
+                            <span class="message-icon">🤖</span>
+                            <span class="message-sender">Claude</span>
+                            <span class="message-time">Just now</span>
+                        </div>
+                        <div class="message-content">
+                            Welcome! Point your camera at your ingredients or cooking, then click "Analyze Cooking" to get started. I'll help guide you through your cooking process!
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div id="loading-overlay" style="display: none;">
+            <div class="spinner"></div>
+            <p>Analyzing with Claude...</p>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
