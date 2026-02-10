@@ -1,3 +1,5 @@
+[![Reviewed by Hound](https://img.shields.io/badge/Reviewed_by-Hound-8E64B0.svg)](https://houndci.com)
+
 # Cooking Assistant Bot
 
 A Python bot that uses your camera to see what you're cooking and provides step-by-step instructions using Claude's vision API and text-to-speech.
