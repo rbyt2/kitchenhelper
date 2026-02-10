@@ -68,6 +68,11 @@ header h1 {
     display: block;
     max-height: 500px;
     object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+#video.flipped {
+    transform: scaleX(-1);
 }
 
 .status-indicator {
