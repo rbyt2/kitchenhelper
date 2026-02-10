@@ -1,11 +1,12 @@
 // Cooking Assistant Web App - Frontend JavaScript
 
 class CookingAssistant {
-    constructor() {
+constructor() {
         this.video = document.getElementById('video');
         this.canvas = document.getElementById('canvas');
         this.captureBtn = document.getElementById('capture-btn');
         this.autoModeBtn = document.getElementById('auto-mode-btn');
+        this.flipCameraBtn = document.getElementById('flip-camera-btn');
         this.speakToggleBtn = document.getElementById('speak-toggle-btn');
         this.clearBtn = document.getElementById('clear-btn');
         this.dialogueContainer = document.getElementById('dialogue-container');
@@ -19,18 +20,21 @@ class CookingAssistant {
         this.autoModeInterval = null;
         this.countdownInterval = null;
         this.speakEnabled = true;
+        this.cameraFlipped = false;
         this.speechSynthesis = window.speechSynthesis;
         
         this.init();
-    }
-    
-    async init() {
+        async init() {
         // Initialize camera
         await this.startCamera();
         
         // Setup event listeners
         this.captureBtn.addEventListener('click', () => this.captureAndAnalyze());
         this.autoModeBtn.addEventListener('click', () => this.toggleAutoMode());
+        this.flipCameraBtn.addEventListener('click', () => this.toggleFlipCamera());
+        this.speakToggleBtn.addEventListener('click', () => this.toggleSpeak());
+        this.clearBtn.addEventListener('click', () => this.clearHistory());
+    }
         this.speakToggleBtn.addEventListener('click', () => this.toggleSpeak());
         this.clearBtn.addEventListener('click', () => this.clearHistory());
     }
@@ -63,14 +67,27 @@ class CookingAssistant {
             this.cameraStatus.classList.remove('active');
         }
     }
-    
     captureImage() {
         const context = this.canvas.getContext('2d');
         this.canvas.width = this.video.videoWidth;
         this.canvas.height = this.video.videoHeight;
+        
+        // If camera is flipped, flip the captured image too
+        if (this.cameraFlipped) {
+            context.translate(this.canvas.width, 0);
+            context.scale(-1, 1);
+        }
+        
         context.drawImage(this.video, 0, 0);
         
+        // Reset transformation for next capture
+        if (this.cameraFlipped) {
+            context.setTransform(1, 0, 0, 1, 0, 0);
+        }
+        
         // Get base64 image
+        return this.canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
+    }
         return this.canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
     }
     
@@ -154,6 +171,19 @@ class CookingAssistant {
             clearInterval(this.countdownInterval);
             this.countdownInterval = null;
         }
+
+    toggleFlipCamera() {
+            this.cameraFlipped = !this.cameraFlipped;
+        
+            if (this.cameraFlipped) {
+                this.video.classList.add('flipped');
+                this.flipCameraBtn.classList.add('active');
+            } else {
+                this.video.classList.remove('flipped');
+                this.flipCameraBtn.classList.remove('active');
+            }
+        }
+        
     }
     
     toggleSpeak() {
