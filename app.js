@@ -1,7 +1,7 @@
 // Cooking Assistant Web App - Frontend JavaScript
 
 class CookingAssistant {
-constructor() {
+    constructor() {
         this.video = document.getElementById('video');
         this.canvas = document.getElementById('canvas');
         this.captureBtn = document.getElementById('capture-btn');
@@ -24,7 +24,9 @@ constructor() {
         this.speechSynthesis = window.speechSynthesis;
         
         this.init();
-        async init() {
+    }
+    
+    async init() {
         // Initialize camera
         await this.startCamera();
         
@@ -32,9 +34,6 @@ constructor() {
         this.captureBtn.addEventListener('click', () => this.captureAndAnalyze());
         this.autoModeBtn.addEventListener('click', () => this.toggleAutoMode());
         this.flipCameraBtn.addEventListener('click', () => this.toggleFlipCamera());
-        this.speakToggleBtn.addEventListener('click', () => this.toggleSpeak());
-        this.clearBtn.addEventListener('click', () => this.clearHistory());
-    }
         this.speakToggleBtn.addEventListener('click', () => this.toggleSpeak());
         this.clearBtn.addEventListener('click', () => this.clearHistory());
     }
@@ -67,6 +66,7 @@ constructor() {
             this.cameraStatus.classList.remove('active');
         }
     }
+    
     captureImage() {
         const context = this.canvas.getContext('2d');
         this.canvas.width = this.video.videoWidth;
@@ -86,8 +86,6 @@ constructor() {
         }
         
         // Get base64 image
-        return this.canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
-    }
         return this.canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
     }
     
@@ -171,19 +169,6 @@ constructor() {
             clearInterval(this.countdownInterval);
             this.countdownInterval = null;
         }
-
-    toggleFlipCamera() {
-            this.cameraFlipped = !this.cameraFlipped;
-        
-            if (this.cameraFlipped) {
-                this.video.classList.add('flipped');
-                this.flipCameraBtn.classList.add('active');
-            } else {
-                this.video.classList.remove('flipped');
-                this.flipCameraBtn.classList.remove('active');
-            }
-        }
-        
     }
     
     toggleSpeak() {
@@ -196,6 +181,18 @@ constructor() {
             this.speakToggleBtn.innerHTML = '<span class="btn-icon">🔇</span> Sound Off';
             this.speakToggleBtn.classList.remove('active');
             this.speechSynthesis.cancel(); // Stop any ongoing speech
+        }
+    }
+    
+    toggleFlipCamera() {
+        this.cameraFlipped = !this.cameraFlipped;
+        
+        if (this.cameraFlipped) {
+            this.video.classList.add('flipped');
+            this.flipCameraBtn.classList.add('active');
+        } else {
+            this.video.classList.remove('flipped');
+            this.flipCameraBtn.classList.remove('active');
         }
     }
     
