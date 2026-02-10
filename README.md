@@ -1,14 +1,14 @@
-# 🍳 Cooking Assistant Bot
+# Cooking Assistant Bot
 
 A Python bot that uses your camera to see what you're cooking and provides step-by-step instructions using Claude's vision API and text-to-speech.
 
 ## Features
 
-- 📸 Real-time camera feed analysis
-- 🤖 Claude Vision API integration for intelligent cooking advice
-- 🗣️ Text-to-speech instructions
-- 💬 Interactive and automatic modes
-- 📝 Context-aware cooking guidance
+- Real-time camera feed analysis
+- Claude Vision API integration for intelligent cooking advice
+- Text-to-speech instructions
+- Interactive and automatic modes
+- Context-aware cooking guidance
 
 ## Prerequisites
 
@@ -188,4 +188,4 @@ For issues with:
 - **Claude API:** Visit https://support.anthropic.com/
 - **This bot:** Check the troubleshooting section above
 
-Happy cooking! 🍳👨‍🍳👩‍🍳
+Happy cooking! 
