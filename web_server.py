@@ -13,6 +13,7 @@ import sys
 import os
 
 app = Flask(__name__)
+CORS(app) # Enabling CORS for all routes, basically
 
 # Load configuration
 config_path = Path(__file__).parent / 'config.json'
