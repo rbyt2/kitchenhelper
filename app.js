@@ -7,6 +7,7 @@ class CookingAssistant {
         this.captureBtn = document.getElementById('capture-btn');
         this.autoModeBtn = document.getElementById('auto-mode-btn');
         this.flipCameraBtn = document.getElementById('flip-camera-btn');
+        this.switchCameraBtn = document.getElementById('switch-camera-btn');
         this.speakToggleBtn = document.getElementById('speak-toggle-btn');
         this.clearBtn = document.getElementById('clear-btn');
         this.dialogueContainer = document.getElementById('dialogue-container');
@@ -14,6 +15,7 @@ class CookingAssistant {
         this.loadingOverlay = document.getElementById('loading-overlay');
         this.countdownDisplay = document.getElementById('countdown-display');
         this.countdownSeconds = document.getElementById('countdown-seconds');
+        this.mobileIndicator = document.getElementById('mobile-indicator');
         
         this.stream = null;
         this.autoModeActive = false;
@@ -23,10 +25,38 @@ class CookingAssistant {
         this.cameraFlipped = false;
         this.speechSynthesis = window.speechSynthesis;
         
+        // Mobile and camera switching
+        this.isMobile = this.detectMobile();
+        this.facingMode = 'environment'; // 'user' for front, 'environment' for back
+        this.cameras = [];
+        this.currentCameraIndex = 0;
+        
         this.init();
     }
     
+    detectMobile() {
+        const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+        
+        // Check for mobile devices
+        const isMobileDevice = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(userAgent.toLowerCase());
+        
+        // Also check for touch capability and screen size
+        const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        const isSmallScreen = window.innerWidth <= 768;
+        
+        return isMobileDevice || (hasTouch && isSmallScreen);
+    }
+    
     async init() {
+        // Show mobile indicator if on mobile
+        if (this.isMobile) {
+            this.mobileIndicator.style.display = 'inline-block';
+            this.switchCameraBtn.style.display = 'flex';
+            
+            // Enumerate cameras on mobile
+            await this.getCameraList();
+        }
+        
         // Initialize camera
         await this.startCamera();
         
@@ -34,21 +64,54 @@ class CookingAssistant {
         this.captureBtn.addEventListener('click', () => this.captureAndAnalyze());
         this.autoModeBtn.addEventListener('click', () => this.toggleAutoMode());
         this.flipCameraBtn.addEventListener('click', () => this.toggleFlipCamera());
+        this.switchCameraBtn.addEventListener('click', () => this.switchCamera());
         this.speakToggleBtn.addEventListener('click', () => this.toggleSpeak());
         this.clearBtn.addEventListener('click', () => this.clearHistory());
     }
     
+    async getCameraList() {
+        try {
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            this.cameras = devices.filter(device => device.kind === 'videoinput');
+            console.log(`Found ${this.cameras.length} cameras`);
+        } catch (error) {
+            console.error('Error enumerating cameras:', error);
+        }
+    }
+    
     async startCamera() {
         try {
-            this.stream = await navigator.mediaDevices.getUserMedia({ 
-                video: { 
-                    width: { ideal: 1280 },
-                    height: { ideal: 720 }
-                } 
-            });
+            // Stop existing stream if any
+            if (this.stream) {
+                this.stream.getTracks().forEach(track => track.stop());
+            }
+            
+            let constraints;
+            
+            if (this.isMobile && this.cameras.length > 0) {
+                // On mobile, use specific camera or facingMode
+                constraints = {
+                    video: {
+                        facingMode: this.facingMode,
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    }
+                };
+            } else {
+                // On desktop, use default camera
+                constraints = {
+                    video: {
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
+                    }
+                };
+            }
+            
+            this.stream = await navigator.mediaDevices.getUserMedia(constraints);
             this.video.srcObject = this.stream;
             
-            this.updateCameraStatus(true, 'Camera ready');
+            const cameraType = this.facingMode === 'user' ? 'Front' : 'Back';
+            this.updateCameraStatus(true, this.isMobile ? `${cameraType} camera ready` : 'Camera ready');
             this.captureBtn.disabled = false;
             
         } catch (error) {
@@ -56,6 +119,20 @@ class CookingAssistant {
             this.updateCameraStatus(false, 'Camera access denied');
             this.addMessage('system', 'Error: Could not access camera. Please grant camera permissions and refresh the page.');
         }
+    }
+    
+    async switchCamera() {
+        if (!this.isMobile) return;
+        
+        // Toggle between front and back camera
+        this.facingMode = this.facingMode === 'user' ? 'environment' : 'user';
+        
+        // Show a brief message
+        const cameraType = this.facingMode === 'user' ? 'front' : 'back';
+        this.updateCameraStatus(true, `Switching to ${cameraType} camera...`);
+        
+        // Restart camera with new facing mode
+        await this.startCamera();
     }
     
     updateCameraStatus(active, text) {
