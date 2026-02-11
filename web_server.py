@@ -10,22 +10,29 @@ import json
 from anthropic import Anthropic
 from pathlib import Path
 import sys
+import os
 
 app = Flask(__name__)
 
 # Load configuration
 config_path = Path(__file__).parent / 'config.json'
-try:
-    with open(config_path, 'r') as f:
-        config = json.load(f)
-    api_key = config['api_key']
-    
-    if api_key == "YOUR_ANTHROPIC_API_KEY_HERE":
-        print("ERROR: Please add your Anthropic API key to config.json")
+
+# Try to get API key from environment variable first (for GitHub secrets)
+api_key = os.environ.get('ANTHROPIC_API_KEY')
+
+# If not in environment, try to load from config.json
+if not api_key:
+    try:
+        with open(config_path, 'r') as f:
+            config = json.load(f)
+        api_key = config.get('api_key')
+    except FileNotFoundError:
+        print("ERROR: config.json not found and ANTHROPIC_API_KEY environment variable not set!")
         sys.exit(1)
-        
-except FileNotFoundError:
-    print("ERROR: config.json not found!")
+
+# Check if we got a valid API key
+if not api_key or api_key == "ANTHROPIC_API_KEY" or api_key == "YOUR_ANTHROPIC_API_KEY_HERE":
+    print("ERROR: Please set the ANTHROPIC_API_KEY environment variable or add your API key to config.json")
     sys.exit(1)
 
 # Initialize Anthropic client
