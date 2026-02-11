@@ -11,6 +11,9 @@
         <header>
             <h1>Cooking Assistant Bot</h1>
             <p class="subtitle">AI-powered cooking guidance with Claude Vision</p>
+            <div id="mobile-indicator" class="mobile-indicator" style="display: none;">
+                Mobile Version
+            </div>
         </header>
 
         <div class="main-content">
@@ -19,8 +22,11 @@
                 <div class="camera-container">
                     <video id="video" autoplay playsinline></video>
                     <canvas id="canvas" style="display: none;"></canvas>
-                    <button id="flip-camera-btn" class="flip-camera-overlay">
+                    <button id="flip-camera-btn" class="flip-camera-overlay" title="Flip camera horizontally">
                         <span class="btn-icon">🔃</span>
+                    </button>
+                    <button id="switch-camera-btn" class="switch-camera-overlay" style="display: none;" title="Switch front/back camera">
+                        <span class="btn-icon">📷</span>
                     </button>
                     <div id="camera-status" class="status-indicator">
                         <span class="status-dot"></span>
