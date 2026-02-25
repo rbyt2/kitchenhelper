@@ -222,7 +222,7 @@ port := "8080"  // or any other port
 - **1,500 requests per day**
 - **1 million tokens per day**
 
-Perfect for a school project! 🎓
+Perfect for a locally-run AI assistant.
 
 ##  Security Notes
 
@@ -266,7 +266,7 @@ export GOOGLE_API_KEY='your-key'
 ##  FAQ
 
 **Q: Do I need to pay for Gemini API?**
-A: No! The free tier is generous enough for this project.
+A: No! The free tier is good enough for this project.
 
 **Q: Can I deploy this online?**
 A: Yes! You can deploy the compiled binary to any server that supports Go.
@@ -279,4 +279,4 @@ A: Faster, single binary deployment, lower memory usage, better for mobile perfo
 
 ---
 
-Happy cooking! 🍳👨‍🍳👩‍🍳
+Happy cooking!
