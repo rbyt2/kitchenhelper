@@ -1,67 +1,62 @@
 #!/bin/bash
 
-echo "========================================"
-echo "Cooking Assistant Bot Setup"
-echo "========================================"
+echo "============================================"
+echo "🍳 Cooking Assistant Setup (Go + Gemini)"
+echo "============================================"
 echo ""
 
-# Check if Python 3 is installed
-if ! command -v python3 &> /dev/null; then
-    echo "❌ Error: Python 3 is not installed"
-    echo "Please install Python 3.8 or higher first"
+# Check if Go is installed
+if ! command -v go &> /dev/null; then
+    echo "❌ Go is not installed!"
+    echo "Please install Go from: https://go.dev/dl/"
     exit 1
 fi
 
-echo "✅ Python 3 found: $(python3 --version)"
+echo "✅ Go is installed: $(go version)"
 echo ""
 
-# Check if pip is installed
-if ! command -v pip3 &> /dev/null; then
-    echo "❌ Error: pip3 is not installed"
-    echo "Please install pip3 first"
-    exit 1
+# Check if API key is set
+if [ -z "$GOOGLE_API_KEY" ]; then
+    echo "⚠️  GOOGLE_API_KEY environment variable is not set"
+    echo ""
+    echo "To get a FREE API key:"
+    echo "1. Visit: https://ai.google.dev/"
+    echo "2. Click 'Get API key in Google AI Studio'"
+    echo "3. Create a new API key"
+    echo ""
+    read -p "Enter your Google API key: " api_key
+    export GOOGLE_API_KEY="$api_key"
+    echo ""
+    echo "✅ API key set for this session"
+    echo ""
+    echo "To make it permanent, add this to your ~/.bashrc or ~/.zshrc:"
+    echo "export GOOGLE_API_KEY='$api_key'"
+    echo ""
+else
+    echo "✅ GOOGLE_API_KEY is already set"
+    echo ""
 fi
 
-echo "✅ pip3 found"
-echo ""
-
-# Install Python dependencies
-echo "📦 Installing Python dependencies..."
-pip3 install -r requirements.txt
+# Download dependencies
+echo "📦 Downloading Go dependencies..."
+go mod download
 
 if [ $? -eq 0 ]; then
-    echo "✅ Dependencies installed successfully"
+    echo "✅ Dependencies downloaded successfully"
 else
-    echo "❌ Error installing dependencies"
+    echo "❌ Failed to download dependencies"
     exit 1
 fi
 
 echo ""
-
-# Check for espeak on Linux
-if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-    if ! command -v espeak &> /dev/null; then
-        echo "⚠️  Warning: espeak not found"
-        echo "Text-to-speech may not work without it"
-        echo ""
-        echo "To install espeak:"
-        echo "  Ubuntu/Debian: sudo apt-get install espeak"
-        echo "  Fedora: sudo dnf install espeak"
-        echo "  Arch: sudo pacman -S espeak"
-        echo ""
-    else
-        echo "✅ espeak found (text-to-speech ready)"
-    fi
-fi
-
-echo ""
-echo "========================================"
+echo "============================================"
 echo "✅ Setup Complete!"
-echo "========================================"
+echo "============================================"
 echo ""
-echo "Next steps:"
-echo "1. Get your Anthropic API key from: https://console.anthropic.com/"
-echo "2. Edit config.json and add your API key"
-echo "3. Run: python3 main.py"
+echo "To run the server:"
+echo "  go run main.go"
 echo ""
-echo "Happy cooking!"
+echo "Or build and run:"
+echo "  go build -o cooking-assistant"
+echo "  ./cooking-assistant"
+echo ""

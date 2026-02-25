@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cooking Assistant Bot</title>
-    <link rel="stylesheet" href="style.css">
+    <title>🍳 Cooking Assistant Bot</title>
+    <link rel="stylesheet" href="static/style.css">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Cooking Assistant Bot</h1>
-            <p class="subtitle">AI-powered cooking guidance with Claude Vision</p>
+            <h1>🍳 Cooking Assistant Bot</h1>
+            <p class="subtitle">AI-powered cooking guidance with Gemini Vision API</p>
             <div id="mobile-indicator" class="mobile-indicator" style="display: none;">
-                Mobile Version
+                📱 Mobile Version
             </div>
         </header>
 
@@ -65,7 +65,7 @@
                     <div class="dialogue-message welcome-message">
                         <div class="message-header">
                             <span class="message-icon">🤖</span>
-                            <span class="message-sender">Claude</span>
+                            <span class="message-sender">Gemini</span>
                             <span class="message-time">Just now</span>
                         </div>
                         <div class="message-content">
@@ -73,16 +73,63 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Question Input & Voice Controls -->
+                <div class="question-input-row">
+                    <div class="question-input-wrapper">
+                        <button id="voice-btn" class="question-voice-btn" title="Ask by voice">
+                            <span class="btn-icon">🎙️</span>
+                        </button>
+                        <input
+                            type="text"
+                            id="question-input"
+                            class="question-input"
+                            placeholder="Ask a question about your ingredients or cooking (optional)..."
+                            autocomplete="off"
+                        />
+                    </div>
+                    <button id="send-question-btn" class="btn btn-primary question-btn" title="Send question">
+                        <span class="btn-icon">📨</span>
+                    </button>
+                </div>
             </div>
         </div>
+
+        <!-- Restart AI Button -->
+        <button id="restart-ai-btn" class="btn btn-restart" title="Restart AI (clear memory)">
+            <span class="btn-icon">♻️</span>
+            Restart AI
+        </button>
 
         <!-- Loading Overlay -->
         <div id="loading-overlay" style="display: none;">
             <div class="spinner"></div>
-            <p>Analyzing with Claude...</p>
+            <p>Analyzing with Gemini...</p>
+        </div>
+
+        <!-- API Key Modal -->
+        <div id="api-key-modal" class="modal-overlay">
+            <div class="modal">
+                <h2>Enter your Gemini API key</h2>
+                <p class="modal-description">
+                    Your key will be stored as an environment variable for this server session only.
+                    You can get a free key from <a href="https://ai.google.dev/" target="_blank" rel="noopener noreferrer">ai.google.dev</a>.
+                </p>
+                <input
+                    type="password"
+                    id="api-key-input"
+                    class="modal-input"
+                    placeholder="AIza..."
+                    autocomplete="off"
+                />
+                <div class="modal-error" id="api-key-error" style="display: none;"></div>
+                <button id="api-key-submit" class="btn btn-primary modal-submit">
+                    Save &amp; Start Cooking Assistant
+                </button>
+            </div>
         </div>
     </div>
 
-    <script src="app.js"></script>
+    <script src="static/app.js"></script>
 </body>
 </html>
