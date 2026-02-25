@@ -16,6 +16,10 @@ class CookingAssistant {
         this.countdownDisplay = document.getElementById('countdown-display');
         this.countdownSeconds = document.getElementById('countdown-seconds');
         this.mobileIndicator = document.getElementById('mobile-indicator');
+        this.questionInput = document.getElementById('question-input');
+        this.voiceBtn = document.getElementById('voice-btn');
+        this.sendQuestionBtn = document.getElementById('send-question-btn');
+        this.restartAiBtn = document.getElementById('restart-ai-btn');
         
         this.stream = null;
         this.autoModeActive = false;
@@ -30,6 +34,10 @@ class CookingAssistant {
         this.facingMode = 'environment'; // 'user' for front, 'environment' for back
         this.cameras = [];
         this.currentCameraIndex = 0;
+
+        // Voice input
+        this.recognition = null;
+        this.isListening = false;
         
         this.init();
     }
@@ -67,6 +75,109 @@ class CookingAssistant {
         this.switchCameraBtn.addEventListener('click', () => this.switchCamera());
         this.speakToggleBtn.addEventListener('click', () => this.toggleSpeak());
         this.clearBtn.addEventListener('click', () => this.clearHistory());
+
+        if (this.restartAiBtn) {
+            this.restartAiBtn.addEventListener('click', () => this.restartAI());
+        }
+
+        if (this.sendQuestionBtn && this.questionInput) {
+            this.sendQuestionBtn.addEventListener('click', () => this.sendQuestion(false));
+            this.questionInput.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    this.sendQuestion(false);
+                }
+            });
+        }
+
+        if (this.voiceBtn) {
+            this.voiceBtn.addEventListener('click', () => this.toggleVoiceInput());
+        }
+
+        this.setupSpeechRecognition();
+    }
+
+    setupSpeechRecognition() {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            // Gracefully degrade if not supported
+            this.recognition = null;
+            if (this.voiceBtn) {
+                this.voiceBtn.disabled = true;
+                this.voiceBtn.title = 'Voice input not supported in this browser';
+            }
+            return;
+        }
+
+        this.recognition = new SpeechRecognition();
+        this.recognition.lang = 'en-US';
+        this.recognition.interimResults = false;
+        this.recognition.maxAlternatives = 1;
+
+        this.recognition.addEventListener('result', (event) => {
+            const transcript = Array.from(event.results)
+                .map(result => result[0].transcript)
+                .join(' ')
+                .trim();
+
+            if (transcript && this.questionInput) {
+                this.questionInput.value = transcript;
+                // Auto-send after voice input
+                this.sendQuestion(false);
+            }
+        });
+
+        this.recognition.addEventListener('end', () => {
+            // Automatically stop listening state when recognition ends
+            if (this.isListening) {
+                this.isListening = false;
+                this.updateVoiceButton();
+            }
+        });
+
+        this.recognition.addEventListener('error', (event) => {
+            console.error('Speech recognition error:', event.error);
+            this.addMessage('system', 'Voice input error. Please try again or type your question instead.');
+            this.isListening = false;
+            this.updateVoiceButton();
+        });
+    }
+
+    toggleVoiceInput() {
+        if (!this.recognition) {
+            this.addMessage('system', 'Your browser does not support voice input. Please use the text box instead.');
+            return;
+        }
+
+        if (this.isListening) {
+            this.recognition.stop();
+            this.isListening = false;
+        } else {
+            try {
+                this.recognition.start();
+                this.isListening = true;
+            } catch (e) {
+                console.error('Error starting speech recognition:', e);
+                this.addMessage('system', 'Could not start voice input. Please try again.');
+                this.isListening = false;
+            }
+        }
+
+        this.updateVoiceButton();
+    }
+
+    updateVoiceButton() {
+        if (!this.voiceBtn) return;
+
+        if (this.isListening) {
+            this.voiceBtn.classList.add('active');
+            this.voiceBtn.innerHTML = '<span class="btn-icon">🛑</span>';
+            this.voiceBtn.title = 'Stop listening';
+        } else {
+            this.voiceBtn.classList.remove('active');
+            this.voiceBtn.innerHTML = '<span class="btn-icon">🎙️</span>';
+            this.voiceBtn.title = 'Ask by voice';
+        }
     }
     
     async getCameraList() {
@@ -176,6 +287,7 @@ class CookingAssistant {
         
         try {
             const imageBase64 = this.captureImage();
+            const question = this.questionInput ? this.questionInput.value.trim() : '';
             
             // Send to backend
             const response = await fetch('/analyze', {
@@ -183,7 +295,7 @@ class CookingAssistant {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ image: imageBase64 })
+                body: JSON.stringify({ image: imageBase64, question })
             });
             
             const data = await response.json();
@@ -202,6 +314,88 @@ class CookingAssistant {
         } catch (error) {
             console.error('Error analyzing image:', error);
             this.addMessage('error', 'Failed to analyze image. Please check your connection and try again.');
+        } finally {
+            this.showLoading(false);
+        }
+    }
+
+    async sendQuestion(forceTextOnly = false) {
+        if (!this.questionInput) return;
+
+        const question = this.questionInput.value.trim();
+        if (!question) {
+            return;
+        }
+
+        // Decide whether to include an image:
+        // - If forceTextOnly is true, skip image.
+        // - Otherwise, include a fresh camera capture if the camera is ready.
+        let imageBase64 = '';
+        if (!forceTextOnly && this.stream) {
+            imageBase64 = this.captureImage();
+        }
+
+        this.showLoading(true);
+
+        try {
+            const response = await fetch('/analyze', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    image: imageBase64,
+                    question
+                })
+            });
+
+            const data = await response.json();
+
+            if (data.error) {
+                this.addMessage('error', data.error);
+            } else {
+                this.addMessage('claude', data.response);
+
+                if (this.speakEnabled) {
+                    this.speak(data.response);
+                }
+            }
+            // Clear the question box after a successful send
+            this.questionInput.value = '';
+        } catch (error) {
+            console.error('Error sending question:', error);
+            this.addMessage('error', 'Failed to send question. Please check your connection and try again.');
+        } finally {
+            this.showLoading(false);
+        }
+    }
+
+    async restartAI() {
+        if (!confirm('Restart AI and clear its memory and conversation history?')) {
+            return;
+        }
+
+        this.showLoading(true);
+
+        try {
+            const response = await fetch('/clear-history', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok || data.error) {
+                const msg = data && data.error ? data.error : 'Failed to restart AI.';
+                this.addMessage('error', msg);
+            } else {
+                this.resetConversationUI();
+                this.addMessage('system', 'AI has been restarted and its memory cleared.');
+            }
+        } catch (error) {
+            console.error('Error restarting AI:', error);
+            this.addMessage('error', 'Failed to restart AI. Please check your connection and try again.');
         } finally {
             this.showLoading(false);
         }
@@ -322,14 +516,42 @@ class CookingAssistant {
         return paragraphs.map(p => `<p>${p.replace(/\n/g, '<br>')}</p>`).join('');
     }
     
-    clearHistory() {
-        if (confirm('Are you sure you want to clear the conversation history?')) {
-            // Keep only the welcome message
-            const welcomeMessage = this.dialogueContainer.querySelector('.welcome-message');
-            this.dialogueContainer.innerHTML = '';
-            if (welcomeMessage) {
-                this.dialogueContainer.appendChild(welcomeMessage);
+    async clearHistory() {
+        if (!confirm('Are you sure you want to clear the conversation history?')) {
+            return;
+        }
+
+        this.showLoading(true);
+
+        try {
+            const response = await fetch('/clear-history', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok || data.error) {
+                const msg = data && data.error ? data.error : 'Failed to clear AI history.';
+                this.addMessage('error', msg);
+                return;
             }
+
+            this.resetConversationUI();
+        } catch (error) {
+            console.error('Error clearing history:', error);
+            this.addMessage('error', 'Failed to clear history. Please check your connection and try again.');
+        } finally {
+            this.showLoading(false);
+        }
+    }
+
+    resetConversationUI() {
+        const welcomeMessage = this.dialogueContainer.querySelector('.welcome-message');
+        this.dialogueContainer.innerHTML = '';
+        if (welcomeMessage) {
+            this.dialogueContainer.appendChild(welcomeMessage);
         }
     }
     
@@ -340,5 +562,81 @@ class CookingAssistant {
 
 // Initialize the app when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    const app = new CookingAssistant();
+    const modal = document.getElementById('api-key-modal');
+    const input = document.getElementById('api-key-input');
+    const submitBtn = document.getElementById('api-key-submit');
+    const errorEl = document.getElementById('api-key-error');
+
+    if (!modal || !input || !submitBtn) {
+        // Fallback: if modal is missing for some reason, start app directly
+        new CookingAssistant();
+        return;
+    }
+
+    const showError = (message) => {
+        if (!errorEl) {
+            alert(message);
+            return;
+        }
+        errorEl.textContent = message;
+        errorEl.style.display = 'block';
+    };
+
+    const clearError = () => {
+        if (!errorEl) return;
+        errorEl.textContent = '';
+        errorEl.style.display = 'none';
+    };
+
+    const submitApiKey = async () => {
+        const apiKey = input.value.trim();
+        clearError();
+
+        if (!apiKey) {
+            showError('Please enter your Gemini API key.');
+            return;
+        }
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Saving...';
+
+        try {
+            const response = await fetch('/set-api-key', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ apiKey })
+            });
+
+            const data = await response.json().catch(() => ({}));
+
+            if (!response.ok || !data.success) {
+                const msg = (data && data.error) ? data.error : 'Failed to save API key. Please try again.';
+                showError(msg);
+                return;
+            }
+
+            // Hide modal and start the main app
+            modal.style.display = 'none';
+            new CookingAssistant();
+        } catch (error) {
+            console.error('Error setting API key:', error);
+            showError('Network error while setting API key. Please check your connection and try again.');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Save & Start Cooking Assistant';
+        }
+    };
+
+    submitBtn.addEventListener('click', submitApiKey);
+    input.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') {
+            submitApiKey();
+        }
+    });
+
+    // Show modal on load
+    modal.style.display = 'flex';
+    input.focus();
 });

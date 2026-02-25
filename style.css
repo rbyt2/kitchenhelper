@@ -6,9 +6,10 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: radial-gradient(circle at top, #1c1c1e 0, #050507 55%, #000000 100%);
     min-height: 100vh;
-    padding: 20px;
+    padding: 24px;
+    color: #f5f5f7;
 }
 
 .container {
@@ -18,7 +19,7 @@ body {
 
 header {
     text-align: center;
-    color: white;
+    color: #f5f5f7;
     margin-bottom: 30px;
 }
 
@@ -37,12 +38,12 @@ header h1 {
     display: inline-block;
     margin-top: 10px;
     padding: 8px 20px;
-    background: rgba(255, 255, 255, 0.2);
+    background: rgba(120, 120, 128, 0.24);
     border-radius: 20px;
     font-size: 0.9rem;
     font-weight: 600;
     backdrop-filter: blur(10px);
-    border: 2px solid rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.24);
 }
 
 .main-content {
@@ -60,10 +61,11 @@ header h1 {
 
 /* Camera Section */
 .camera-section {
-    background: white;
+    background: #1c1c1e;
     border-radius: 15px;
     padding: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75);
+    border: 1px solid #2c2c2e;
 }
 
 .camera-container {
@@ -91,8 +93,8 @@ header h1 {
     position: absolute;
     top: 15px;
     right: 15px;
-    background: rgba(0,0,0,0.7);
-    color: white;
+    background: rgba(28, 28, 30, 0.85);
+    color: #f5f5f7;
     padding: 8px 15px;
     border-radius: 20px;
     display: flex;
@@ -105,7 +107,7 @@ header h1 {
     position: absolute;
     top: 15px;
     left: 15px;
-    background: rgba(255,255,255,0.9);
+    background: rgba(44, 44, 46, 0.95);
     border: none;
     border-radius: 50%;
     width: 50px;
@@ -116,18 +118,18 @@ header h1 {
     cursor: pointer;
     transition: all 0.3s ease;
     font-size: 1.5rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
     z-index: 10;
 }
 
 .flip-camera-overlay:hover {
-    background: rgba(255,255,255,1);
+    background: rgba(58, 58, 60, 1);
     transform: scale(1.1);
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
 
 .flip-camera-overlay.active {
-    background: #4CAF50;
+    background: #32d74b;
 }
 
 .flip-camera-overlay.active .btn-icon {
@@ -138,7 +140,7 @@ header h1 {
     position: absolute;
     bottom: 15px;
     left: 15px;
-    background: rgba(255,255,255,0.9);
+    background: rgba(44, 44, 46, 0.95);
     border: none;
     border-radius: 50%;
     width: 50px;
@@ -149,12 +151,12 @@ header h1 {
     cursor: pointer;
     transition: all 0.3s ease;
     font-size: 1.5rem;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.4);
     z-index: 10;
 }
 
 .switch-camera-overlay:hover {
-    background: rgba(255,255,255,1);
+    background: rgba(58, 58, 60, 1);
     transform: scale(1.1);
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
 }
@@ -167,12 +169,12 @@ header h1 {
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background: #ff4444;
+    background: #ff453a;
     animation: pulse 2s infinite;
 }
 
 .status-indicator.active .status-dot {
-    background: #00ff00;
+    background: #32d74b;
 }
 
 @keyframes pulse {
@@ -208,27 +210,29 @@ header h1 {
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+    background: linear-gradient(135deg, #0a84ff 0%, #64d2ff 100%);
+    color: #ffffff;
+    box-shadow: 0 12px 30px rgba(10, 132, 255, 0.45);
 }
 
 .btn-primary:hover:not(:disabled) {
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    box-shadow: 0 18px 40px rgba(10, 132, 255, 0.6);
 }
 
 .btn-secondary {
-    background: #f0f0f0;
-    color: #333;
+    background: #2c2c2e;
+    color: #f5f5f7;
+    border: 1px solid #3a3a3c;
 }
 
 .btn-secondary:hover:not(:disabled) {
-    background: #e0e0e0;
+    background: #3a3a3c;
 }
 
 .btn-secondary.active {
-    background: #4CAF50;
-    color: white;
+    background: #32d74b;
+    color: #000000;
 }
 
 .btn-icon {
@@ -239,38 +243,62 @@ header h1 {
     padding: 8px 15px;
     border: none;
     border-radius: 5px;
-    background: #ff6b6b;
-    color: white;
+    background: #ff453a;
+    color: #ffffff;
     font-size: 0.9rem;
     cursor: pointer;
     transition: background 0.3s;
 }
 
 .btn-small:hover {
-    background: #ff5252;
+    background: #ff3b30;
+}
+
+.btn-restart {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 1200;
+    padding: 10px 18px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #ff453a 0%, #ff9f0a 100%);
+    color: #ffffff;
+    box-shadow: 0 12px 30px rgba(255, 69, 58, 0.55);
+    font-size: 0.95rem;
+    border: none;
+}
+
+.btn-restart:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 40px rgba(255, 69, 58, 0.75);
+}
+
+.btn-restart .btn-icon {
+    font-size: 1rem;
 }
 
 .countdown {
     margin-top: 15px;
     padding: 12px;
-    background: #fff3cd;
+    background: rgba(255, 214, 10, 0.16);
     border-radius: 8px;
     text-align: center;
     font-weight: 600;
-    color: #856404;
+    color: #ffd60a;
 }
 
 #countdown-seconds {
     font-size: 1.2rem;
-    color: #d63384;
+    color: #ff9f0a;
 }
 
 /* Dialogue Section */
 .dialogue-section {
-    background: white;
+    background: #1c1c1e;
     border-radius: 15px;
     padding: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    box-shadow: 0 24px 60px rgba(0,0,0,0.75);
+    border: 1px solid #2c2c2e;
     display: flex;
     flex-direction: column;
     max-height: 600px;
@@ -287,7 +315,7 @@ header h1 {
 
 .dialogue-header h2 {
     font-size: 1.5rem;
-    color: #333;
+    color: #f5f5f7;
 }
 
 .dialogue-container {
@@ -296,31 +324,165 @@ header h1 {
     padding-right: 10px;
 }
 
+.question-input-row {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.question-input-wrapper {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.question-input {
+    width: 100%;
+    padding: 10px 12px 10px 40px;
+    border-radius: 999px;
+    border: 1px solid #3a3a3c;
+    background: #2c2c2e;
+    color: #f5f5f7;
+    font-size: 0.95rem;
+}
+
+.question-input::placeholder {
+    color: #8e8e93;
+}
+
+.question-input:focus {
+    outline: none;
+    border-color: #0a84ff;
+    box-shadow: 0 0 0 2px rgba(10, 132, 255, 0.4);
+}
+
+.question-voice-btn {
+    position: absolute;
+    left: 10px;
+    border: none;
+    background: transparent;
+    color: #f5f5f7;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.question-voice-btn .btn-icon {
+    font-size: 1.1rem;
+}
+
+.question-voice-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.question-voice-btn.active .btn-icon {
+    color: #ff453a;
+}
+
+.question-btn {
+    flex: 0 0 auto;
+    padding: 0 18px;
+    min-width: auto;
+}
+
 /* Custom Scrollbar */
 .dialogue-container::-webkit-scrollbar {
     width: 8px;
 }
 
 .dialogue-container::-webkit-scrollbar-track {
-    background: #f1f1f1;
+    background: #1c1c1e;
     border-radius: 10px;
 }
 
 .dialogue-container::-webkit-scrollbar-thumb {
-    background: #888;
+    background: #636366;
     border-radius: 10px;
 }
 
 .dialogue-container::-webkit-scrollbar-thumb:hover {
-    background: #555;
+    background: #8e8e93;
+}
+
+/* API Key Modal */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1100;
+}
+
+.modal {
+    background: #1c1c1e;
+    border-radius: 16px;
+    padding: 24px 24px 20px;
+    max-width: 420px;
+    width: 100%;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.9);
+    border: 1px solid #2c2c2e;
+}
+
+.modal h2 {
+    margin-bottom: 10px;
+    font-size: 1.4rem;
+}
+
+.modal-description {
+    font-size: 0.95rem;
+    color: #d1d1d6;
+    margin-bottom: 16px;
+}
+
+.modal-description a {
+    color: #64d2ff;
+    text-decoration: none;
+}
+
+.modal-description a:hover {
+    text-decoration: underline;
+}
+
+.modal-input {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #3a3a3c;
+    background: #2c2c2e;
+    color: #f5f5f7;
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+}
+
+.modal-input:focus {
+    outline: none;
+    border-color: #0a84ff;
+    box-shadow: 0 0 0 2px rgba(10, 132, 255, 0.4);
+}
+
+.modal-error {
+    color: #ff453a;
+    font-size: 0.85rem;
+    margin-bottom: 10px;
+}
+
+.modal-submit {
+    width: 100%;
+    margin-top: 4px;
 }
 
 .dialogue-message {
     margin-bottom: 20px;
     padding: 15px;
     border-radius: 10px;
-    background: #f8f9fa;
-    border-left: 4px solid #667eea;
+    background: #2c2c2e;
+    border-left: 4px solid #0a84ff;
     animation: slideIn 0.3s ease;
 }
 
@@ -336,8 +498,8 @@ header h1 {
 }
 
 .welcome-message {
-    background: #e7f3ff;
-    border-left-color: #2196F3;
+    background: #1d2838;
+    border-left-color: #0a84ff;
 }
 
 .message-header {
@@ -354,17 +516,17 @@ header h1 {
 
 .message-sender {
     font-weight: 700;
-    color: #667eea;
+    color: #64d2ff;
 }
 
 .message-time {
-    color: #999;
+    color: #8e8e93;
     margin-left: auto;
     font-size: 0.85rem;
 }
 
 .message-content {
-    color: #333;
+    color: #f5f5f7;
     line-height: 1.6;
     font-size: 1rem;
 }
@@ -427,6 +589,14 @@ header h1 {
     }
     
     .btn {
+        width: 100%;
+    }
+
+    .question-input-row {
+        flex-direction: column;
+    }
+
+    .question-btn {
         width: 100%;
     }
 }
