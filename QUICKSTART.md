@@ -90,7 +90,7 @@ go run main.go
 
 ---
 
-## 🎓 For School Presentation
+## ✅ For Easy Startup
 
 ```bash
 # Build standalone executable (no Go needed to run)
